@@ -3,7 +3,7 @@ import requests
 import html
 import socket
 
-port = 5024
+port = 5029
 app = Flask("__main__")
 
 @app.route("/", methods=["GET"])
@@ -14,25 +14,29 @@ def route():
 def home():
     host = socket.gethostname()
     ip = socket.gethostbyname(host)
-    if request.args.get("err") is None:
-        return render_template("home.html", ip=ip)
-    elif request.args.get("err") == "openfile":
-        return render_template("home.html", ip=ip, err="ファイルがありません")
+    err = ""
+    result = ""
+    if request.args.get("err") is not None:
+        err = "ファイルがありません"
+    if request.args.get("result") is not None:
+        result = request.args.get("result")
+    return render_template("home.html", ip=ip, err=err, result=result)
 
 @app.route("/upload", methods=["GET"])
 def upload():
     path = request.args.get("path")
     address = request.args.get("address")
-    #url = "http://" + html.escape(address) + "/:" + str(port) + "/download"
     url = "http://" + html.escape(address) + ":" + str(port) + "/download"
-    #try:
-    #target_file = open("uploads/"+path, "rb")
-    #except:
-    #    return redirect("../?err=openfile")
-    files = {'file': open("uploads/"+path, "rb")}
+    try:
+        files = {'file': open("uploads/"+path, "rb")}
+    except:
+        return redirect("home?err=openfile")
     response = requests.post(url=url, files=files, data={"filename":path})
-    print(response.text)
-    return redirect("home")
+    if response.status_code == 200:
+        return redirect("home?result="+response.text)
+    elif response.status_code == 404:
+        return redirect("home?result=アドレスが間違っています")
+    
 
 @app.route("/download", methods=["POST"])
 def download():
