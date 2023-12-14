@@ -3,7 +3,7 @@ import requests
 import html
 import socket
 
-port = 5029
+port = 5030
 app = Flask("__main__")
 
 @app.route("/", methods=["GET"])
@@ -26,7 +26,8 @@ def home():
 def upload():
     path = request.args.get("path")
     address = request.args.get("address")
-    url = "http://" + html.escape(address) + ":" + str(port) + "/download"
+    toport = request.args.get("toport")
+    url = "http://" + html.escape(address) + ":" + str(toport) + "/download"
     try:
         files = {'file': open("uploads/"+path, "rb")}
     except:
