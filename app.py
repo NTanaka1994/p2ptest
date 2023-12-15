@@ -2,8 +2,9 @@ from flask import Flask, redirect, render_template, request
 import requests
 import html
 import socket
+import os
 
-port = 5030
+port = 5031
 app = Flask("__main__")
 
 @app.route("/", methods=["GET"])
@@ -47,7 +48,7 @@ def download():
     if file.filename == "":
         return "ファイル名が有りません"
     try:
-        file.save("downloads/"+request.form["filename"])
+        file.save("downloads/"+os.path.basename(request.form["filename"]))
         return "ファイルが保存されました"
     except:
         return "ファイルの保存に失敗しました"
