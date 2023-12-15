@@ -1,10 +1,9 @@
 from flask import Flask, redirect, render_template, request
 import requests
-import html
 import socket
 import os
 
-port = 5031
+port = 5032
 app = Flask("__main__")
 
 @app.route("/", methods=["GET"])
@@ -28,7 +27,7 @@ def upload():
     path = request.args.get("path")
     address = request.args.get("address")
     toport = request.args.get("toport")
-    url = "http://" + html.escape(address) + ":" + str(toport) + "/download"
+    url = "http://" + address + ":" + str(toport) + "/download"
     try:
         files = {'file': open("uploads/"+path, "rb")}
     except:
