@@ -1,9 +1,11 @@
 from flask import Flask, redirect, render_template, request
+import pandas as pd
 import requests
 import socket
 import os
+import html
 
-port = 5032
+port = 5034
 app = Flask("__main__")
 
 @app.route("/", methods=["GET"])
@@ -14,13 +16,25 @@ def route():
 def home():
     host = socket.gethostname()
     ip = socket.gethostbyname(host)
+    df = pd.read_csv("node.csv")
+    cols = df.columns
+    val = df.values
+    node = "<table border=\"1\">\n\t<tr>"
+    for col in cols:
+        node = node + "<th>" + html.escape(col) + "</th>"
+    node = node + "</tr>\n"
+    for i in range(len(val)):
+        node = node + "\t<tr>"
+        for j in range(len(val[i])):
+            node = node + "<td>" + html.escape(str(val[i][j])) + "</td>"
+        node = node + "\n"
     err = ""
     result = ""
     if request.args.get("err") is not None:
         err = "ファイルがありません"
     if request.args.get("result") is not None:
         result = request.args.get("result")
-    return render_template("home.html", ip=ip, err=err, result=result)
+    return render_template("home.html", ip=ip, err=err, result=result, node=node)
 
 @app.route("/upload", methods=["GET"])
 def upload():
@@ -38,7 +52,6 @@ def upload():
     elif response.status_code == 404:
         return redirect("home?result=アドレスが間違っています")
     
-
 @app.route("/download", methods=["POST"])
 def download():
     if "file" not in request.files:
