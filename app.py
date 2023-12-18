@@ -1,11 +1,12 @@
-from flask import Flask, redirect, render_template, request
+from flask import Flask, redirect, render_template, request, send_file
 import pandas as pd
 import requests
 import socket
 import os
 import html
+import glob
 
-port = 5034
+port = 5041
 app = Flask("__main__")
 
 @app.route("/", methods=["GET"])
@@ -27,6 +28,11 @@ def home():
         node = node + "\t<tr>"
         for j in range(len(val[i])):
             node = node + "<td>" + html.escape(str(val[i][j])) + "</td>"
+        node = node + "<tr><td colspan=\"3\">"
+        print("http://"+str(val[i][1])+":"+str(val[i][2])+"/files")
+        response = requests.get("http://"+str(val[i][1])+":"+str(val[i][2])+"/files").text
+        node = node + response
+        node = node + "</td></tr>"
         node = node + "\n"
     err = ""
     result = ""
@@ -64,6 +70,21 @@ def download():
         return "ファイルが保存されました"
     except:
         return "ファイルの保存に失敗しました"
+
+@app.route("/files", methods=["GET"])
+def datas():
+    host = socket.gethostname()
+    ip = socket.gethostbyname(host)
+    files = glob.glob("uploads/*")
+    res = ""
+    for file in files:
+        res = res + "<a href=\"http://" + ip + ":" + str(port) + "/file?name=" + os.path.basename(file) + "\">" + os.path.basename(file) + "</a><br>\n"
+    return res
+
+@app.route("/file", methods=["GET"])
+def data():
+    name = request.args.get("name")
+    return send_file("uploads/"+name)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=port)
