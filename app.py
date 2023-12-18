@@ -6,7 +6,7 @@ import os
 import html
 import glob
 
-port = 5041
+port = 5044
 app = Flask("__main__")
 
 @app.route("/", methods=["GET"])
@@ -28,12 +28,12 @@ def home():
         node = node + "\t<tr>"
         for j in range(len(val[i])):
             node = node + "<td>" + html.escape(str(val[i][j])) + "</td>"
-        node = node + "<tr><td colspan=\"3\">"
+        node = node + "</tr>\n"
+        node = node + "\t<tr><td colspan=\"3\">\n"
         print("http://"+str(val[i][1])+":"+str(val[i][2])+"/files")
         response = requests.get("http://"+str(val[i][1])+":"+str(val[i][2])+"/files").text
         node = node + response
-        node = node + "</td></tr>"
-        node = node + "\n"
+        node = node + "\t</td></tr>\n</table>"
     err = ""
     result = ""
     if request.args.get("err") is not None:
@@ -78,7 +78,7 @@ def datas():
     files = glob.glob("uploads/*")
     res = ""
     for file in files:
-        res = res + "<a href=\"http://" + ip + ":" + str(port) + "/file?name=" + os.path.basename(file) + "\">" + os.path.basename(file) + "</a><br>\n"
+        res = res + "\t\t<a href=\"http://" + ip + ":" + str(port) + "/file?name=" + os.path.basename(file) + "\">" + os.path.basename(file) + "</a><br>\n"
     return res
 
 @app.route("/file", methods=["GET"])
