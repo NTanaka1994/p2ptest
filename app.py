@@ -6,7 +6,7 @@ import os
 import html
 import glob
 
-port = 5046
+port = 5047
 app = Flask("__main__")
 
 @app.route("/", methods=["GET"])
@@ -32,7 +32,7 @@ def home():
         node = node + "\t<tr><td colspan=\"3\">\n"
         response = requests.get("http://"+str(val[i][1])+":"+str(val[i][2])+"/files").text
         node = node + response
-        node = node + "\t</]td></tr>\n"
+        node = node + "\t</td></tr>\n"
     node = node + "</table>"
     err = ""
     result = ""
