@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+{{ err | safe }}
+{{ result | safe }}
+<h2>あなたのIPアドレス</h2>
+<h3>{{ ip | safe }}</h3>
+<h2>送信情報</h2>
+<form action="upload" method="GET">
+    <table>
+        <tr><td>相手IPアドレス</td><td><input type="text" name="address" required></td></tr>
+        <tr><td>相手ポート番号</td><td><input type="number" name="toport" required></td></tr>
+        <tr><td>ファイル名</td><td><input type="text" name="path" required></td></tr>
+        <tr><td colspan="2" align="right"><input type="submit" value="送信"></td></tr>
+    </table>
+</form>
+<h2>アドレス集</h2>
+{{ node | safe }}
