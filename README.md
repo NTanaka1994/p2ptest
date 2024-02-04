@@ -1,1 +1,1 @@
-Clone this repository, and every user that in local network input username, IPaddress, PortNumber in "node.csv". And run every user "app.py". You can use file sharing service in your browser(localhost).
+Clone this repository, and every user that in local network input username, IPaddress, PortNumber in "node.csv". And every user run "app.py". You can use file sharing service in your browser(localhost).
