@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request, send_file
+from flask import Flask, redirect, render_template, request, send_file, jsonify
 from requests.exceptions import Timeout
 import pandas as pd
 import requests
@@ -6,8 +6,9 @@ import socket
 import os
 import html
 import glob
+import json
 
-port = 5013
+port = 5011
 app = Flask("__main__")
 
 @app.route("/", methods=["GET"])
@@ -38,6 +39,20 @@ def home():
             node = node + "<td colspan=\"3\">\n"
             node = node + res
             node = node + "\t</td>"
+            node = node + "</tr>"
+        except Timeout:
+            pass
+        try:
+            response = requests.get("http://"+str(val[i][1])+":"+str(val[i][2])+"/json",
+                                   timeout=2.0)
+            node = node + "<tr><td><table border=\"2\">"
+            jsons = json.loads(response.text)
+            for col in jsons:
+                node = node + "<tr><td>" + col + "</td><td>"
+                for raw in jsons[col]:
+                    node = node + raw + "</br>"
+            node = node + ""
+            node = node + "</table></tr></td>"
         except Timeout:
             pass
         node = node + "</tr>\n"
@@ -93,6 +108,28 @@ def datas():
 def data():
     name = request.args.get("name")
     return send_file("uploads/"+name)
+
+@app.route("/json", methods=["GET"])
+def getjson():
+    df = pd.read_csv("node.csv")
+    val = df.values
+    jsons = {}
+    for i in range(len(val)):
+        try:
+            response = response = requests.get("http://"+str(val[i][1])+":"+str(val[i][2])+"/file-json",
+                                   timeout=(1.0, 2.5))
+            jsons["http://"+str(val[i][1])+":"+str(val[i][2])] = json.loads(response.text)
+        except Timeout:
+            pass
+    return jsonify(jsons)
+
+@app.route("/file-json", methods=["GET"])
+def file_json():
+    files = glob.glob("uploads/*")
+    res = []
+    for file in files:
+        res.append(os.path.basename(file))
+    return jsonify(res)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=port)
