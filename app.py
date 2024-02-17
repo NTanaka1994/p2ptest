@@ -8,7 +8,7 @@ import html
 import glob
 import json
 
-port = 5015
+port = 5022
 app = Flask("__main__")
 
 @app.route("/", methods=["GET"])
@@ -46,15 +46,14 @@ def home():
             response = requests.get("http://"+str(val[i][1])+":"+str(val[i][2])+"/json",
                                    timeout=2.0)
             jsons = json.loads(response.text)
-            node = node + "<tr><td colspan=\"2\">連絡先アドレス</td><td>ファイル</td>"
+            node = node + "\n\t<tr>\n\t\t<td colspan=\"2\">連絡先アドレス</td><td>ファイル</td>\n\t</tr>\n"
             for col in jsons:
-                node = node + "<tr><td colspan=\"2\">" + col + "</td><td>"
+                node = node + "\t<tr>\n\t\t<td colspan=\"2\">" + col + "</td><td>\n"
                 for raw in jsons[col]:
-                    node = node + "<a href=\""+ col + "/file?name=" + raw + "\">" + raw + "</br>"
-            node = node + "</td></tr>"
+                    node = node + "\t\t\t<a href=\""+ col + "/file?name=" + raw + "\">" + raw + "</a><br>\n"
+                node = node + "\t\t</td>\n\t</tr>\n"
         except Timeout:
             pass
-        node = node + "</tr>\n"
     node = node + "</table>"
     err = ""
     result = ""
