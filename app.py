@@ -8,7 +8,7 @@ import html
 import glob
 import json
 
-port = 5022
+port = 5024
 app = Flask("__main__")
 
 @app.route("/", methods=["GET"])
@@ -41,6 +41,7 @@ def home():
             node = node + "\t</td>"
             node = node + "</tr>"
         except Timeout:
+            node = node + "\n\t</tr>\n"
             pass
         try:
             response = requests.get("http://"+str(val[i][1])+":"+str(val[i][2])+"/json",
