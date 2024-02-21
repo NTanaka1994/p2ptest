@@ -115,7 +115,7 @@ def getjson():
     jsons = {}
     for i in range(len(val)):
         try:
-            response = response = requests.get("http://"+str(val[i][1])+":"+str(val[i][2])+"/file-json",
+            response = requests.get("http://"+str(val[i][1])+":"+str(val[i][2])+"/file-json",
                                    timeout=(1.0, 2.5))
             jsons["http://"+str(val[i][1])+":"+str(val[i][2])] = json.loads(response.text)
         except Timeout:
